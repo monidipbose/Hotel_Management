@@ -4,9 +4,9 @@ var mysql = require("mysql");
 
 const router = express.Router();
 
-const ID = "AKIAV37BXTEFJSQFK76C";
-const SECRET = "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";
-const BUCKET_NAME = "monidip18";
+const ID = "";
+const SECRET = "";
+const BUCKET_NAME = "";
 
 const s3 = new AWS.S3({
   accessKeyId: ID,
