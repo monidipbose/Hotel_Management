@@ -4,9 +4,9 @@ var mysql = require("mysql");
 
 const router = express.Router();
 
-const ID = "AKIAV37BXTEFJSQFK76C";
-const SECRET = "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";
-const BUCKET_NAME = "monidip18";
+const ID = "";
+const SECRET = "";
+const BUCKET_NAME = "";
 
 const s3 = new AWS.S3({
   accessKeyId: ID,
@@ -95,6 +95,33 @@ const getUserByEmail = async (req, res, next) => {
   }
 };
 
+const getFeedbackEmail = async (req, res, next) => {
+  try {
+    let { email } = req.params;
+    let sql = "SELECT * FROM feedback where email = '" + email + "'";
+
+    const con = mysql.createConnection({
+      host: "mashal.c1qllfwqoquo.us-east-2.rds.amazonaws.com",
+      user: "mashal_admin",
+      password: "mashal2020",
+      database: "Mashal",
+    });
+
+    con.connect(function () {
+      con.query(sql, function (err, result) {
+        if (err) {
+          con.end();
+          throw err;
+        }
+        res.json({ result: result });
+      });
+      con.end();
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
 const approveUser = async (req, res, next) => {
   try {
     let { email } = req.params;
@@ -102,6 +129,32 @@ const approveUser = async (req, res, next) => {
       "UPDATE register SET checkinApprove = 'yes' WHERE email = '" +
       email +
       "'";
+
+    const con = mysql.createConnection({
+      host: "mashal.c1qllfwqoquo.us-east-2.rds.amazonaws.com",
+      user: "mashal_admin",
+      password: "mashal2020",
+      database: "Mashal",
+    });
+
+    con.connect(function () {
+      con.query(sql, function (err, result) {
+        if (err) {
+          con.end();
+          throw err;
+        }
+        res.json({ result: result });
+      });
+      con.end();
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+const deleteUser = async (req, res, next) => {
+  try {
+    let { email } = req.params;
+    let sql = "DELETE FROM register WHERE email = '" + email + "'";
 
     const con = mysql.createConnection({
       host: "mashal.c1qllfwqoquo.us-east-2.rds.amazonaws.com",
@@ -409,10 +462,65 @@ const register = async (req, res, next) => {
     next(e);
   }
 };
+const saveFeedback = async (req, res, next) => {
+  try {
+    let data = req.body;
+
+    let { email, name, phone, company, rating, source, feedback, date } = data;
+
+    let sql =
+      "INSERT INTO feedback (email,name,phone,company,rating,source,feedback,date) VALUES ('" +
+      email +
+      "','" +
+      name +
+      "','" +
+      phone +
+      "','" +
+      company +
+      "','" +
+      rating +
+      "','" +
+      source +
+      "','" +
+      feedback +
+      "','" +
+      date +
+      "');";
+
+    sql =
+      sql +
+      "UPDATE register SET feedback = 'yes' WHERE email = '" +
+      email +
+      "';";
+
+    const con = mysql.createConnection({
+      host: "mashal.c1qllfwqoquo.us-east-2.rds.amazonaws.com",
+      user: "mashal_admin",
+      password: "mashal2020",
+      database: "Mashal",
+      multipleStatements: true,
+    });
+
+    con.connect(function () {
+      con.query(sql, function (err, result) {
+        if (err) {
+          con.end();
+          throw err;
+        }
+        res.json({ result: result });
+      });
+      con.end();
+    });
+  } catch (e) {
+    next(e);
+  }
+};
 
 router.route("/api/getUser/:date/:checkinApprove").get(getData);
 
 router.route("/api/get/:email").get(getUserByEmail);
+
+router.route("/api/getFeedback/:email").get(getFeedbackEmail);
 
 router.route("/api/approve/:email").put(approveUser);
 
@@ -429,5 +537,9 @@ router.route("/api/upload").post(async (req, res) => {
 });
 
 router.route("/api/register").post(register);
+
+router.route("/api/feedback").post(saveFeedback);
+
+router.route("/api/deleteUser/:email").delete(deleteUser);
 
 module.exports = router;

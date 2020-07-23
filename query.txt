@@ -33,3 +33,16 @@ CREATE TABLE `Mashal`.`register` (
   `regDate` DATE NULL,
   `checkinApprove` VARCHAR(3) NULL,
   PRIMARY KEY (`email`));
+
+  -------------------------------------------------------------
+
+  CREATE TABLE `Mashal`.`feedback` (
+  `email` VARCHAR(45) NOT NULL,
+  `name` VARCHAR(45) NULL,
+  `phone` VARCHAR(20) NULL,
+  `company` VARCHAR(45) NULL,
+  `rating` VARCHAR(45) NULL,
+  `source` VARCHAR(45) NULL,
+  `feedback` VARCHAR(450) NULL,
+  `date` DATE NULL,
+  PRIMARY KEY (`email`));
